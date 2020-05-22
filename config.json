@@ -1,0 +1,6 @@
+{
+  "JsonRpcAddress":"http://localhost:20336",
+  "ContractAddress":"",
+  "GasPrice":0,
+  "GasLimit":20000
+}

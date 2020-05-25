@@ -23,5 +23,9 @@ import (
 )
 
 func RegisterCelo() {
+	core.OntTool.RegMethod("regIdWithPublicKey", regIdWithPublicKey)
 	core.OntTool.RegMethod("bindCelo", bindCelo)
+	core.OntTool.RegMethod("setCeloDefault", setCeloDefault)
+
+	core.OntTool.RegMethod("getCeloDefault", getCeloDefault)
 }

@@ -29,6 +29,36 @@ import (
 	sdk "github.com/ontio/ontology-go-sdk"
 )
 
+type regIdWithPublicKeyParam struct {
+	OntId string
+	Path  string
+}
+
+func regIdWithPublicKey(ontSdk *sdk.OntologySdk) bool {
+	data, err := ioutil.ReadFile("./params/regIdWithPublicKey.json")
+	if err != nil {
+		fmt.Println("ioutil.ReadFile failed: ", err)
+		return false
+	}
+	regIdWithPublicKeyParam := new(regIdWithPublicKeyParam)
+	err = json.Unmarshal(data, regIdWithPublicKeyParam)
+	if err != nil {
+		fmt.Println("json.Unmarshal failed: ", err)
+		return false
+	}
+	time.Sleep(1 * time.Second)
+	user, ok := common.GetAccountByPassword(ontSdk, regIdWithPublicKeyParam.Path)
+	if !ok {
+		return false
+	}
+	ok = invokeRegIdWithPublicKey(ontSdk, user, regIdWithPublicKeyParam.OntId)
+	if !ok {
+		return false
+	}
+	common.WaitForBlock(ontSdk)
+	return true
+}
+
 type bindCeloParam struct {
 	OntId       string
 	Index       uint32
@@ -59,5 +89,61 @@ func bindCelo(ontSdk *sdk.OntologySdk) bool {
 		return false
 	}
 	common.WaitForBlock(ontSdk)
+	return true
+}
+
+type setCeloDefaultParam struct {
+	OntId       string
+	Index       uint32
+	Path        string
+	CeloAddress string
+}
+
+func setCeloDefault(ontSdk *sdk.OntologySdk) bool {
+	data, err := ioutil.ReadFile("./params/setCeloDefault.json")
+	if err != nil {
+		fmt.Println("ioutil.ReadFile failed: ", err)
+		return false
+	}
+	setCeloDefaultParam := new(setCeloDefaultParam)
+	err = json.Unmarshal(data, setCeloDefaultParam)
+	if err != nil {
+		fmt.Println("json.Unmarshal failed: ", err)
+		return false
+	}
+	time.Sleep(1 * time.Second)
+	user, ok := common.GetAccountByPassword(ontSdk, setCeloDefaultParam.Path)
+	if !ok {
+		return false
+	}
+	celoAddress := ethcommon.HexToAddress(setCeloDefaultParam.CeloAddress)
+	ok = invokeSetCeloDefault(ontSdk, user, setCeloDefaultParam.OntId, setCeloDefaultParam.Index, celoAddress[:])
+	if !ok {
+		return false
+	}
+	common.WaitForBlock(ontSdk)
+	return true
+}
+
+type getCeloDefaultParam struct {
+	OntId string
+}
+
+func getCeloDefault(ontSdk *sdk.OntologySdk) bool {
+	data, err := ioutil.ReadFile("./params/getCeloDefault.json")
+	if err != nil {
+		fmt.Println("ioutil.ReadFile failed: ", err)
+		return false
+	}
+	getCeloDefaultParam := new(getCeloDefaultParam)
+	err = json.Unmarshal(data, getCeloDefaultParam)
+	if err != nil {
+		fmt.Println("json.Unmarshal failed: ", err)
+		return false
+	}
+	ok := invokeGetCeloDefault(ontSdk, getCeloDefaultParam.OntId)
+	if !ok {
+		return false
+	}
 	return true
 }
